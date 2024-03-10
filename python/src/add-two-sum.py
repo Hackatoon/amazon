@@ -32,9 +32,9 @@ class Solution:
  
         return result
 
-    def reverse(self, l: Optional[ListNode]):
+    def reverse(self, link_list: Optional[ListNode]):
          # init current, previous, next
-        current = l
+        current = link_list
         previous = next = None
 
         while (current):
