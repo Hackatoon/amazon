@@ -5,52 +5,42 @@
 #         self.left = left
 #         self.right = right
 class Solution:
-    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
-        previous, target = self.search(root, root, key)
-
-        if previous and target:
-            self.switch(previous, target)
-
-        return root
-
-    def search(self, previous, current, key):
-
-        if not current:
-            return None, None
-
-        if current.val == key:
-            return previous, current
-
-        if key < current.val and current.left:
-
-            print(current.val, current.left.val)
-            return self.search(current, current.left, key)
-
-        if key > current.val and current.right:
-            return self.search(current, current.right, key) 
-
-        return None, None
-
-    def switch(self, previous, target):
+    # One step right and then always left
+    def successor(self, root: TreeNode) -> int:
+            root = root.right
+            while root.left:
+                root = root.left
+            return root.val
         
-        if target.right or target.left:
+    # One step left and then always right
+    def predecessor(self, root: TreeNode) -> int:
+        root = root.left
+        while root.right:
+            root = root.right
+        return root.val
 
-            if target.right:
-                if previous.left.val == target.val:
-                    node = previous.left
-                    previous.left = target.right
-                    previous.left.left = node
-                if previous.right.val == target.val:
-                    node = previous.right
-                    previous.right = target.right
-                    previous.right.left = node
-            else:
-                if target.left:
-                    node = previous.left
-                    previous.left = target.left
+    def deleteNode(self, root: TreeNode, key: int) -> TreeNode:
+        if not root:
+            return None
+
+        # delete from the right subtree
+        if key > root.val:
+            root.right = self.deleteNode(root.right, key)
+        # delete from the left subtree
+        elif key < root.val:
+            root.left = self.deleteNode(root.left, key)
+        # delete the current node
         else:
-            if previous.left.val == target.val:
-                previous.left = None
-            if previous.right.val == target.val:
-                previous.right = None
-            
+            # the node is a leaf
+            if not (root.left or root.right):
+                root = None
+            # The node is not a leaf and has a right child
+            elif root.right:
+                root.val = self.successor(root)
+                root.right = self.deleteNode(root.right, root.val)
+            # the node is not a leaf, has no right child, and has a left child    
+            else:
+                root.val = self.predecessor(root)
+                root.left = self.deleteNode(root.left, root.val)
+                        
+        return root
